@@ -31,6 +31,7 @@ export function MovieCard({ movie }: Props) {
       {/* Poster */}
       <div className="relative">
         <img
+          loading="eager"
           src={imageUrl}
           alt={movie.title}
           className="w-full h-64 object-cover"

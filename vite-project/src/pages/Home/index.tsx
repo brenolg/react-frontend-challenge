@@ -47,7 +47,7 @@ export default function Home() {
   });
 
   const { data: discoverData, isFetching: isFiltering } = useQuery({
-    queryKey: ["discover", selectedGenre],
+    queryKey: ["discover", selectedGenre, year, minRating],
     queryFn: () =>
       discoverMovies({
         genreId: selectedGenre === "all" ? undefined : selectedGenre,
