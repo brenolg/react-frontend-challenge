@@ -2,6 +2,7 @@ import { Card } from "@/components/ui/card";
 import { useGenreNames } from "@/hooks/useGenreNames";
 import type { Genre, Movie } from "@/types/movies";
 import { formatDateYear } from "@/utils/dates";
+import { useNavigate } from "@tanstack/react-router";
 
 type Props = Readonly<{
   movie: Movie;
@@ -11,11 +12,17 @@ type Props = Readonly<{
 export function MovieCard({ movie, genres }: Props) {
   const imageUrl = `https://image.tmdb.org/t/p/w500${movie.poster_path}`;
 
-  const genreNames = useGenreNames(movie.genre_ids, genres);
+  const navigate = useNavigate();
+
+  const { genreString } = useGenreNames(movie.genre_ids, genres);
+
   return (
     <Card
-      className="overflow-hidden rounded-2xl shadow-md hover:shadow-xl transition-all w-48"
+      className="overflow-hidden rounded-2xl shadow-md hover:shadow-xl transition-all w-48 cursor-pointer"
       noPaddingTop
+      onClick={() =>
+        navigate({ to: "/movie/$id", params: { id: movie.id.toString() } })
+      }
     >
       {/* Poster */}
       <div className="relative">
@@ -39,7 +46,7 @@ export function MovieCard({ movie, genres }: Props) {
         <p className="text-sm font-semibold line-clamp-1">{movie.title}</p>
         {/* Gênero */}
         <p className="text-xs text-muted-foreground line-clamp-1">
-          {genreNames}
+          {genreString}
         </p>
       </div>
     </Card>

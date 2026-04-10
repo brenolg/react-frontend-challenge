@@ -26,3 +26,17 @@ export async function getPopularMovies() {
 
   return response.json();
 }
+
+export async function getMovieDetails(id: string) {
+  const res = await fetch(
+    `https://api.themoviedb.org/3/movie/${id}?append_to_response=credits,videos`,
+    {
+      headers: {
+        Authorization: `Bearer eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiI0ODFiZjQwZDk1M2NmMDliMTUwMzkzNDFjYjk4MjY5MiIsIm5iZiI6MTc3NTc2NDY5OC40ODE5OTk5LCJzdWIiOiI2OWQ4MDRkYTVhMzVmMWM5YWMxOTE1YjUiLCJzY29wZXMiOlsiYXBpX3JlYWQiXSwidmVyc2lvbiI6MX0.BBbscbMIrfHV11DC48-DLvLdHDAannA0PvRSf2pAPUU`,
+        "Content-Type": "application/json",
+      },
+    },
+  );
+
+  return res.json();
+}

@@ -4,6 +4,7 @@ import {
   createRouter,
 } from "@tanstack/react-router";
 
+import MovieDetails from "@/pages/MovieDetails";
 import Home from "../../pages/Home";
 import Login from "../../pages/Login";
 
@@ -21,7 +22,12 @@ const homeRoute = createRoute({
   component: Home,
 });
 
-const routeTree = rootRoute.addChildren([loginRoute, homeRoute]);
+const movieRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: "/movie/$id",
+  component: MovieDetails,
+});
+const routeTree = rootRoute.addChildren([loginRoute, homeRoute, movieRoute]);
 
 export const router = createRouter({
   routeTree,
