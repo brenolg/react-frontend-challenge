@@ -12,7 +12,9 @@ type Props = Readonly<{
 export function MovieCard({ movie }: Props) {
   const { genres } = useMoviesStore();
 
-  const imageUrl = `https://image.tmdb.org/t/p/w500${movie.poster_path}`;
+  const imageUrl = movie.poster_path
+    ? `https://image.tmdb.org/t/p/w500${movie.poster_path}`
+    : "https://placehold.co/500x750?text=Sem+Imagem";
 
   const navigate = useNavigate();
 
@@ -35,12 +37,17 @@ export function MovieCard({ movie }: Props) {
         />
 
         {/* Rating  */}
-        <div className="absolute bottom-1 left-1 bg-black/80 text-white text-sm px-2 py-1 rounded-md">
-          {movie.vote_average.toFixed(1)}
-        </div>
-        <div className="absolute bottom-1 right-1 bg-black/80 text-white text-sm px-2 py-1 rounded-md">
-          {formatDateYear(movie.release_date)}
-        </div>
+        {!!movie.vote_average && (
+          <div className="absolute bottom-1 left-1 bg-black/80 text-white text-sm px-2 py-1 rounded-md">
+            {movie.vote_average.toFixed(1)}
+          </div>
+        )}
+
+        {movie.release_date && (
+          <div className="absolute bottom-1 right-1 bg-black/80 text-white text-sm px-2 py-1 rounded-md">
+            {formatDateYear(movie.release_date)}
+          </div>
+        )}
       </div>
 
       <div className="px-4">
@@ -48,7 +55,7 @@ export function MovieCard({ movie }: Props) {
         <p className="text-sm font-semibold line-clamp-1">{movie.title}</p>
         {/* Gênero */}
         <p className="text-xs text-muted-foreground line-clamp-1">
-          {genreString}
+          {genreString || "Não especificado"}
         </p>
       </div>
     </Card>

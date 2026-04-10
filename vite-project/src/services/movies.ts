@@ -1,12 +1,13 @@
 import { useMoviesStore } from "@/store/useMoviesStore";
 import axios from "axios";
 
-const API_URL = "https://api.themoviedb.org/3";
+const API_URL = import.meta.env.VITE_API_URL;
+const authorization = `Bearer ${import.meta.env.VITE_TMDB_TOKEN}`;
 
 export async function getGenres() {
   const response = await axios.get(`${API_URL}/genre/movie/list`, {
     headers: {
-      Authorization: `Bearer eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiI0ODFiZjQwZDk1M2NmMDliMTUwMzkzNDFjYjk4MjY5MiIsIm5iZiI6MTc3NTc2NDY5OC40ODE5OTk5LCJzdWIiOiI2OWQ4MDRkYTVhMzVmMWM5YWMxOTE1YjUiLCJzY29wZXMiOlsiYXBpX3JlYWQiXSwidmVyc2lvbiI6MX0.BBbscbMIrfHV11DC48-DLvLdHDAannA0PvRSf2pAPUU`,
+      Authorization: authorization,
       "Content-Type": "application/json",
     },
     params: {
@@ -22,7 +23,7 @@ export async function getGenres() {
 export async function getPopularMovies() {
   const response = await fetch(`${API_URL}/movie/popular`, {
     headers: {
-      Authorization: `Bearer eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiI0ODFiZjQwZDk1M2NmMDliMTUwMzkzNDFjYjk4MjY5MiIsIm5iZiI6MTc3NTc2NDY5OC40ODE5OTk5LCJzdWIiOiI2OWQ4MDRkYTVhMzVmMWM5YWMxOTE1YjUiLCJzY29wZXMiOlsiYXBpX3JlYWQiXSwidmVyc2lvbiI6MX0.BBbscbMIrfHV11DC48-DLvLdHDAannA0PvRSf2pAPUU`,
+      Authorization: authorization,
       "Content-Type": "application/json",
     },
   });
@@ -39,11 +40,25 @@ export async function getMovieDetails(id: string) {
     `https://api.themoviedb.org/3/movie/${id}?append_to_response=credits,videos`,
     {
       headers: {
-        Authorization: `Bearer eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiI0ODFiZjQwZDk1M2NmMDliMTUwMzkzNDFjYjk4MjY5MiIsIm5iZiI6MTc3NTc2NDY5OC40ODE5OTk5LCJzdWIiOiI2OWQ4MDRkYTVhMzVmMWM5YWMxOTE1YjUiLCJzY29wZXMiOlsiYXBpX3JlYWQiXSwidmVyc2lvbiI6MX0.BBbscbMIrfHV11DC48-DLvLdHDAannA0PvRSf2pAPUU`,
+        Authorization: authorization,
         "Content-Type": "application/json",
       },
     },
   );
 
   return res.json();
+}
+
+export async function searchMovies(query: string) {
+  const response = await fetch(
+    `${API_URL}/search/movie?query=${query}&language=pt-BR`,
+    {
+      headers: {
+        Authorization: authorization,
+        "Content-Type": "application/json",
+      },
+    },
+  );
+
+  return response.json();
 }
