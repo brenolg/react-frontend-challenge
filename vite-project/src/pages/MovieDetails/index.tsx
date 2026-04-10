@@ -3,6 +3,7 @@ import { Tag } from "@/components/Tag";
 import { Button } from "@/components/ui/button";
 import { useGenreNames } from "@/hooks/useGenreNames";
 import { getMovieDetails } from "@/services/movies";
+import type { MovieDetails } from "@/types/movies";
 import { useQuery } from "@tanstack/react-query";
 import { Link, useParams } from "@tanstack/react-router";
 import { ArrowLeft } from "lucide-react";
@@ -10,56 +11,60 @@ import { ArrowLeft } from "lucide-react";
 export default function MovieDetails() {
   const { id } = useParams({ from: "/movie/$id" });
 
-  const { data, isLoading } = useQuery({
+  const { data, isLoading } = useQuery<MovieDetails>({
     queryKey: ["movie", id],
     queryFn: () => getMovieDetails(id),
   });
 
-  const genreIds = data?.genres?.map((g: any) => g.id) || [];
+  console.log(data);
+  const genreIds: number[] = data?.genres?.map((g) => g.id) || [];
   const { genreArray } = useGenreNames(genreIds, data?.genres || []);
 
   if (isLoading) return <p>Carregando...</p>;
-  const crew = data.credits.crew;
+
+  const crew = data?.credits?.crew || [];
 
   const directors = crew
-    .filter((p: any) => p.job === "Director")
-    .map((p: any) => p.name)
+    .filter((p) => p.job === "Director")
+    .map((p) => p.name)
     .join(", ");
 
   const writers = crew
-    .filter((p: any) => p.job === "Writer" || p.job === "Screenplay")
-    .map((p: any) => p.name)
+    .filter((p) => p.job === "Writer" || p.job === "Screenplay")
+    .map((p) => p.name)
     .join(", ");
 
   const producers = crew
-    .filter((p: any) => p.job === "Producer")
-    .map((p: any) => p.name)
+    .filter((p) => p.job === "Producer")
+    .map((p) => p.name)
     .join(", ");
 
-  const studios = data.production_companies?.map((c: any) => c.name).join(", ");
+  const studios = data?.production_companies?.map((c) => c.name).join(", ");
 
-  const runtime = data.runtime
+  const runtime = data?.runtime
     ? `${Math.floor(data.runtime / 60)}h ${data.runtime % 60}min`
     : null;
 
-  const cast = data.credits.cast
+  const cast = data?.credits.cast
     .slice(0, 10)
-    .map((actor: any) => actor.name)
+    .map((actor) => actor.name)
     .join(", ");
 
   function toggleFavorite() {
-    const stored = JSON.parse(localStorage.getItem("favorites") || "[]");
+    const stored: MovieDetails[] = JSON.parse(
+      localStorage.getItem("favorites") || "[]",
+    );
 
-    const exists = stored.find((m: any) => m.id === data.id);
+    const exists = stored.find((m) => m?.id === data?.id);
 
     const updated = exists
-      ? stored.filter((m: any) => m.id !== data.id)
+      ? stored.filter((m) => m.id !== data?.id)
       : [...stored, data];
 
     localStorage.setItem("favorites", JSON.stringify(updated));
   }
-  const trailer = data.videos.results.find(
-    (v: any) => v.type === "Trailer" && v.site === "YouTube",
+  const trailer = data?.videos.results.find(
+    (v) => v.type === "Trailer" && v.site === "YouTube",
   );
 
   return (
@@ -80,7 +85,8 @@ export default function MovieDetails() {
           {/* Hero */}
           <div className="relative w-full h-[300px] rounded-xl overflow-hidden">
             <img
-              src={`https://image.tmdb.org/t/p/original${data.backdrop_path}`}
+              alt="poster"
+              src={`https://image.tmdb.org/t/p/original${data?.backdrop_path}`}
               className="w-full h-full object-cover"
             />
             <div className="absolute inset-0 bg-black/40" />
@@ -94,6 +100,7 @@ export default function MovieDetails() {
                   src={`https://www.youtube.com/embed/${trailer.key}`}
                   className="w-full h-full rounded-xl"
                   allowFullScreen
+                  title={`Trailer do filme ${data?.title}`}
                 />
               </div>
             </div>
@@ -102,10 +109,10 @@ export default function MovieDetails() {
 
         <div className="space-y-6 order-1 lg:order-2">
           <div>
-            <h1 className="text-3xl font-bold pb-3">{data.title}</h1>
+            <h1 className="text-3xl font-bold pb-3">{data?.title}</h1>
 
             <div className="flex items-center gap-2 flex-wrap text-sm text-muted-foreground">
-              <span>⭐ {data.vote_average.toFixed(1)}</span> |
+              <span>⭐ {data?.vote_average.toFixed(1)}</span> |
               <p className="font-medium">{runtime}</p> |
               <div className="flex gap-1 flex-wrap">
                 {genreArray.map((genre) => (
@@ -119,7 +126,7 @@ export default function MovieDetails() {
           {/* Sinopse */}
           <div>
             <h2 className="text-xl font-semibold mb-2">Sinopse</h2>
-            <p className="text-muted-foreground">{data.overview}</p>
+            <p className="text-muted-foreground">{data?.overview}</p>
           </div>
           <Divider className="my-2 opacity-30" />
 

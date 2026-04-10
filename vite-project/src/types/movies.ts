@@ -30,3 +30,53 @@ export type Genre = {
 export type GenresResponse = {
   genres: Genre[];
 };
+
+export type Cast = {
+  id: number;
+  name: string;
+  character: string;
+  profile_path: string | null;
+};
+
+export type Crew = {
+  id: number;
+  name: string;
+  job: string;
+  department: string;
+};
+
+export type Video = {
+  key: string;
+  type: string;
+  site: string;
+};
+
+export type ProductionCompany = {
+  id: number;
+  name: string;
+  logo_path: string | null;
+};
+
+export type MovieDetails = {
+  id: number;
+  title: string;
+  overview: string;
+  backdrop_path: string | null;
+  poster_path: string | null;
+  release_date: string;
+  runtime: number;
+  vote_average: number;
+
+  genres: Genre[];
+
+  production_companies: ProductionCompany[];
+
+  credits: {
+    cast: Cast[];
+    crew: Crew[];
+  };
+
+  videos: {
+    results: Video[];
+  };
+};
