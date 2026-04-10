@@ -39,7 +39,7 @@ export function MovieCard({ movie }: Props) {
         {/* Rating  */}
         {!!movie.vote_average && (
           <div className="absolute bottom-1 left-1 bg-black/80 text-white text-sm px-2 py-1 rounded-md">
-            {movie.vote_average.toFixed(1)}
+            ⭐ {movie.vote_average.toFixed(1)}
           </div>
         )}
 

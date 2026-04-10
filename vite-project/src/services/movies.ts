@@ -65,7 +65,7 @@ export async function discoverMovies(filters: DiscoverFilters) {
     params.primary_release_year = filters.year;
   }
 
-  if (filters.minRating) {
+  if (filters.minRating !== undefined) {
     params["vote_average.gte"] = filters.minRating;
   }
 

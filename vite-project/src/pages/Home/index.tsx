@@ -24,6 +24,7 @@ export default function Home() {
   const [search, setSearch] = useState("");
   const [selectedGenre, setSelectedGenre] = useState<number | "all">("all");
   const [year, setYear] = useState<number | "">("");
+  const [minRating, setMinRating] = useState<number | "">("");
   const debouncedSearch = useDebounce(search, 500);
 
   const results = useQueries({
@@ -51,8 +52,9 @@ export default function Home() {
       discoverMovies({
         genreId: selectedGenre === "all" ? undefined : selectedGenre,
         year: year || undefined,
+        minRating: minRating || undefined,
       }),
-    enabled: selectedGenre !== "all" || !!year,
+    enabled: selectedGenre !== "all" || !!year || !!minRating,
   });
 
   const initialLoading = results.some((q) => q.isPending);
@@ -64,12 +66,13 @@ export default function Home() {
   if (!genres || !popularMovies) return null;
 
   function getMoviesToShow() {
-    if ((selectedGenre !== "all" || year) && discoverData) {
-      return discoverData.results;
-    }
     if (debouncedSearch && searchData) {
       return searchData.results;
     }
+    if ((selectedGenre !== "all" || year || minRating) && discoverData) {
+      return discoverData.results;
+    }
+
     return popularMovies;
   }
 
@@ -89,6 +92,26 @@ export default function Home() {
         onChange={(e) => setSearch(e.target.value)}
         className="w-full p-2 border rounded-md"
       />
+      <Select
+        value={minRating ? String(minRating) : "all"}
+        onValueChange={(value) =>
+          setMinRating(value === "all" ? "" : Number(value))
+        }
+      >
+        <SelectTrigger className="w-[140px]">
+          <SelectValue placeholder="Nota mínima" />
+        </SelectTrigger>
+
+        <SelectContent className="z-50 bg-background">
+          <SelectItem value="all">Todas</SelectItem>
+
+          {[9, 8, 7, 6, 5, 4, 3, 2, 1].map((rating) => (
+            <SelectItem key={rating} value={String(rating)}>
+              ⭐ {rating}+
+            </SelectItem>
+          ))}
+        </SelectContent>
+      </Select>
       <Select
         value={year ? String(year) : "all"}
         onValueChange={(value) => setYear(value === "all" ? "" : Number(value))}
