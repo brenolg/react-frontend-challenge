@@ -1,5 +1,7 @@
 import { Divider } from "@/components/Divider";
+import { Tag } from "@/components/Tag";
 import { Button } from "@/components/ui/button";
+import { useGenreNames } from "@/hooks/useGenreNames";
 import { getMovieDetails } from "@/services/movies";
 import { useQuery } from "@tanstack/react-query";
 import { Link, useParams } from "@tanstack/react-router";
@@ -12,11 +14,11 @@ export default function MovieDetails() {
     queryKey: ["movie", id],
     queryFn: () => getMovieDetails(id),
   });
-  console.log(data);
 
-  // const { genreArray } = useGenreNames(movie.genre_ids, genres);
+  const genreIds = data?.genres?.map((g: any) => g.id) || [];
+  const { genreArray } = useGenreNames(genreIds, data?.genres || []);
+
   if (isLoading) return <p>Carregando...</p>;
-
   const crew = data.credits.crew;
 
   const directors = crew
@@ -64,9 +66,9 @@ export default function MovieDetails() {
     <div className="min-h-screen bg-background text-foreground px-24 py-12">
       {/* Header */}
       <div className="flex items-center justify-between mb-6">
-        <Link to="/home" className="flex items-center gap-2">
-          <ArrowLeft size={16} />
-          <p>Voltar</p>
+        <Link to="/home" className="flex items-center gap-3">
+          <ArrowLeft size={24} />
+          <p className="text-2xl">Voltar</p>
         </Link>
 
         <Button onClick={toggleFavorite}>⭐ Favoritar</Button>
@@ -100,23 +102,16 @@ export default function MovieDetails() {
 
         <div className="space-y-6 order-1 lg:order-2">
           <div>
-            <h1 className="text-3xl font-bold">{data.title}</h1>
+            <h1 className="text-3xl font-bold pb-3">{data.title}</h1>
 
             <div className="flex items-center gap-2 flex-wrap text-sm text-muted-foreground">
               <span>⭐ {data.vote_average.toFixed(1)}</span> |
               <p className="font-medium">{runtime}</p> |
-              {/* Gêneros 
-                <div className="flex gap-1 flex-wrap">
-                  {genreArray.map((genre) => (
-                    <span
-                      key={genre}
-                      className="px-2 py-0.5 bg-secondary rounded-full text-[10px]"
-                    >
-                      {genre}
-                    </span>
-                  ))}
-                </div>
-                */}
+              <div className="flex gap-1 flex-wrap">
+                {genreArray.map((genre) => (
+                  <Tag key={genre}>{genre}</Tag>
+                ))}
+              </div>
             </div>
             <Divider className="my-2 opacity-30" />
           </div>

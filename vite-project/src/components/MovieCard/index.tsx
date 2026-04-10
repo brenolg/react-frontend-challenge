@@ -1,15 +1,17 @@
 import { Card } from "@/components/ui/card";
 import { useGenreNames } from "@/hooks/useGenreNames";
-import type { Genre, Movie } from "@/types/movies";
+import { useMoviesStore } from "@/store/useMoviesStore";
+import type { Movie } from "@/types/movies";
 import { formatDateYear } from "@/utils/dates";
 import { useNavigate } from "@tanstack/react-router";
 
 type Props = Readonly<{
   movie: Movie;
-  genres: Genre[];
 }>;
 
-export function MovieCard({ movie, genres }: Props) {
+export function MovieCard({ movie }: Props) {
+  const { genres } = useMoviesStore();
+
   const imageUrl = `https://image.tmdb.org/t/p/w500${movie.poster_path}`;
 
   const navigate = useNavigate();

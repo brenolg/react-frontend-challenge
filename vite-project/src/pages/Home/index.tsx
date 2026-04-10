@@ -1,9 +1,12 @@
 import { MovieCard } from "@/components/MovieCard";
 import { getGenres, getPopularMovies } from "@/services/movies";
+import { useMoviesStore } from "@/store/useMoviesStore";
 import type { GenresResponse, MoviesResponse } from "@/types/movies";
 import { useQueries } from "@tanstack/react-query";
 
 export default function Home() {
+  const { popularMovies, genres } = useMoviesStore();
+
   const results = useQueries({
     queries: [
       {
@@ -27,17 +30,14 @@ export default function Home() {
   if (hasError) return <p>Erro ao carregar</p>;
 
   if (isLoading) return <p>Carregando...</p>;
-  const genresData = results[0].data;
-  const moviesData = results[1].data;
 
-  console.log(genresData, moviesData);
-  if (!genresData || !moviesData) return null;
+  if (!genres || !popularMovies) return null;
 
   return (
     <div className="flex flex-wrap gap-4">
-      {moviesData.results.map((movie) => (
+      {popularMovies.map((movie) => (
         <div className="w-48" key={movie.id}>
-          <MovieCard movie={movie} genres={genresData.genres} />
+          <MovieCard movie={movie} />
         </div>
       ))}
     </div>
