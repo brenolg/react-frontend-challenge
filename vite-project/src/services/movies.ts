@@ -55,14 +55,19 @@ export type DiscoverFilters = {
 };
 
 export async function discoverMovies(filters: DiscoverFilters) {
-  const params = new URLSearchParams();
+  const params: Record<string, string | number> = {};
 
-  if (filters.genreId) params.append("with_genres", String(filters.genreId));
+  if (filters.genreId) {
+    params.with_genres = filters.genreId;
+  }
 
-  if (filters.year) params.append("primary_release_year", String(filters.year));
+  if (filters.year) {
+    params.primary_release_year = filters.year;
+  }
 
-  if (filters.minRating)
-    params.append("vote_average.gte", String(filters.minRating));
+  if (filters.minRating) {
+    params["vote_average.gte"] = filters.minRating;
+  }
 
   const response = await api.get("/discover/movie", {
     params,

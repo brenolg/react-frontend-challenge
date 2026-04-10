@@ -23,6 +23,7 @@ export default function Home() {
   const { popularMovies, genres } = useMoviesStore();
   const [search, setSearch] = useState("");
   const [selectedGenre, setSelectedGenre] = useState<number | "all">("all");
+  const [year, setYear] = useState<number | "">("");
   const debouncedSearch = useDebounce(search, 500);
 
   const results = useQueries({
@@ -49,8 +50,9 @@ export default function Home() {
     queryFn: () =>
       discoverMovies({
         genreId: selectedGenre === "all" ? undefined : selectedGenre,
+        year: year || undefined,
       }),
-    enabled: selectedGenre !== "all", //
+    enabled: selectedGenre !== "all" || !!year,
   });
 
   const initialLoading = results.some((q) => q.isPending);
@@ -62,7 +64,7 @@ export default function Home() {
   if (!genres || !popularMovies) return null;
 
   function getMoviesToShow() {
-    if (selectedGenre !== "all" && discoverData) {
+    if ((selectedGenre !== "all" || year) && discoverData) {
       return discoverData.results;
     }
     if (debouncedSearch && searchData) {
@@ -74,6 +76,10 @@ export default function Home() {
   const moviesToShow = getMoviesToShow();
   console.log(moviesToShow);
 
+  const currentYear = new Date().getFullYear();
+
+  const years = Array.from({ length: 50 }, (_, i) => currentYear - i);
+
   return (
     <div className="space-y-4">
       <Input
@@ -83,6 +89,24 @@ export default function Home() {
         onChange={(e) => setSearch(e.target.value)}
         className="w-full p-2 border rounded-md"
       />
+      <Select
+        value={year ? String(year) : "all"}
+        onValueChange={(value) => setYear(value === "all" ? "" : Number(value))}
+      >
+        <SelectTrigger className="w-[120px]">
+          <SelectValue placeholder="Ano" />
+        </SelectTrigger>
+
+        <SelectContent className="z-50 bg-background max-h-60">
+          <SelectItem value="all">Todos</SelectItem>
+
+          {years.map((y) => (
+            <SelectItem key={y} value={String(y)}>
+              {y}
+            </SelectItem>
+          ))}
+        </SelectContent>
+      </Select>
 
       <Select
         value={selectedGenre === "all" ? "all" : String(selectedGenre)}
