@@ -1,12 +1,6 @@
+import { FilterSelect } from "@/components/form/FilterSelect";
 import { MovieCard } from "@/components/MovieCard";
 import { Input } from "@/components/ui/input";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import { useDebounce } from "@/hooks/useDebounce";
 import {
   discoverMovies,
@@ -18,13 +12,18 @@ import { useMoviesStore } from "@/store/useMoviesStore";
 import type { Movie } from "@/types/movies";
 import { useQueries, useQuery } from "@tanstack/react-query";
 import { useState } from "react";
+import {
+  createGenreOptions,
+  createRatingOptions,
+  createYearOptions,
+} from "./factory";
 
 export default function Home() {
   const { popularMovies, genres } = useMoviesStore();
   const [search, setSearch] = useState("");
-  const [selectedGenre, setSelectedGenre] = useState<number | "all">("all");
-  const [year, setYear] = useState<number | "">("");
-  const [minRating, setMinRating] = useState<number | "">("");
+  const [selectedGenre, setSelectedGenre] = useState<number | null>(null);
+  const [year, setYear] = useState<number | null>(null);
+  const [minRating, setMinRating] = useState<number | null>(null);
   const debouncedSearch = useDebounce(search, 500);
 
   const results = useQueries({
@@ -50,11 +49,11 @@ export default function Home() {
     queryKey: ["discover", selectedGenre, year, minRating],
     queryFn: () =>
       discoverMovies({
-        genreId: selectedGenre === "all" ? undefined : selectedGenre,
-        year: year || undefined,
-        minRating: minRating || undefined,
+        genreId: selectedGenre ?? null,
+        year: year ?? null,
+        minRating: minRating ?? null,
       }),
-    enabled: selectedGenre !== "all" || !!year || !!minRating,
+    enabled: selectedGenre != null || year != null || minRating != null,
   });
 
   const initialLoading = results.some((q) => q.isPending);
@@ -69,7 +68,10 @@ export default function Home() {
     if (debouncedSearch && searchData) {
       return searchData.results;
     }
-    if ((selectedGenre !== "all" || year || minRating) && discoverData) {
+    if (
+      (selectedGenre != null || year != null || minRating != null) &&
+      discoverData
+    ) {
       return discoverData.results;
     }
 
@@ -77,11 +79,10 @@ export default function Home() {
   }
 
   const moviesToShow = getMoviesToShow();
-  console.log(moviesToShow);
 
-  const currentYear = new Date().getFullYear();
-
-  const years = Array.from({ length: 50 }, (_, i) => currentYear - i);
+  const genreOptions = createGenreOptions(genres);
+  const yearOptions = createYearOptions();
+  const ratingOptions = createRatingOptions();
 
   return (
     <div className="space-y-4">
@@ -92,75 +93,40 @@ export default function Home() {
         onChange={(e) => setSearch(e.target.value)}
         className="w-full p-2 border rounded-md"
       />
-      <Select
-        value={minRating ? String(minRating) : "all"}
-        onValueChange={(value) =>
-          setMinRating(value === "all" ? "" : Number(value))
-        }
-      >
-        <SelectTrigger className="w-[140px]">
-          <SelectValue placeholder="Nota mínima" />
-        </SelectTrigger>
+      <FilterSelect
+        value={minRating}
+        onChange={setMinRating}
+        options={ratingOptions}
+        placeholder="Nota mínima"
+        className="w-[140px]"
+      />
+      <FilterSelect
+        value={year}
+        onChange={setYear}
+        options={yearOptions}
+        placeholder="Ano"
+        className="w-[120px]"
+      />
 
-        <SelectContent className="z-50 bg-background">
-          <SelectItem value="all">Todas</SelectItem>
-
-          {[9, 8, 7, 6, 5, 4, 3, 2, 1].map((rating) => (
-            <SelectItem key={rating} value={String(rating)}>
-              ⭐ {rating}+
-            </SelectItem>
-          ))}
-        </SelectContent>
-      </Select>
-      <Select
-        value={year ? String(year) : "all"}
-        onValueChange={(value) => setYear(value === "all" ? "" : Number(value))}
-      >
-        <SelectTrigger className="w-[120px]">
-          <SelectValue placeholder="Ano" />
-        </SelectTrigger>
-
-        <SelectContent className="z-50 bg-background max-h-60">
-          <SelectItem value="all">Todos</SelectItem>
-
-          {years.map((y) => (
-            <SelectItem key={y} value={String(y)}>
-              {y}
-            </SelectItem>
-          ))}
-        </SelectContent>
-      </Select>
-
-      <Select
-        value={selectedGenre === "all" ? "all" : String(selectedGenre)}
-        onValueChange={(value) =>
-          setSelectedGenre(value === "all" ? "all" : Number(value))
-        }
-      >
-        <SelectTrigger className="w-[200px]">
-          <SelectValue placeholder="Selecione um gênero" />
-        </SelectTrigger>
-
-        <SelectContent className="z-50 bg-background">
-          <SelectItem value="all">Todos</SelectItem>
-
-          {genres.map((genre) => (
-            <SelectItem key={genre.id} value={String(genre.id)}>
-              {genre.name}
-            </SelectItem>
-          ))}
-        </SelectContent>
-      </Select>
+      <FilterSelect
+        value={selectedGenre}
+        onChange={setSelectedGenre}
+        options={genreOptions}
+        placeholder="Selecione um gênero"
+        className="w-[200px]"
+      />
 
       {isGlobalLoading && <p>Filtrando...</p>}
 
-      <div className="flex flex-wrap gap-4">
-        {moviesToShow.map((movie: Movie) => (
-          <div className="w-48" key={movie.id}>
-            <MovieCard movie={movie} />
-          </div>
-        ))}
-      </div>
+      {!isGlobalLoading && (
+        <div className="flex flex-wrap gap-4">
+          {moviesToShow.map((movie: Movie) => (
+            <div className="w-48" key={movie.id}>
+              <MovieCard movie={movie} />
+            </div>
+          ))}
+        </div>
+      )}
     </div>
   );
 }

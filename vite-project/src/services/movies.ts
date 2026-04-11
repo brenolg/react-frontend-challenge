@@ -49,23 +49,23 @@ export async function searchMovies(query: string) {
 }
 
 export type DiscoverFilters = {
-  genreId?: number;
-  year?: number;
-  minRating?: number;
+  genreId: number | null;
+  year: number | null;
+  minRating: number | null;
 };
 
 export async function discoverMovies(filters: DiscoverFilters) {
   const params: Record<string, string | number> = {};
 
-  if (filters.genreId) {
+  if (filters.genreId != null) {
     params.with_genres = filters.genreId;
   }
 
-  if (filters.year) {
+  if (filters.year != null) {
     params.primary_release_year = filters.year;
   }
 
-  if (filters.minRating !== undefined) {
+  if (filters.minRating != null) {
     params["vote_average.gte"] = filters.minRating;
   }
 
