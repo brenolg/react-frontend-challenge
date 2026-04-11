@@ -1,6 +1,5 @@
 import { Divider } from "@/components/Divider";
 import { Tag } from "@/components/Tag";
-import { Button } from "@/components/ui/button";
 import { useGenreNames } from "@/hooks/useGenreNames";
 import { getMovieDetails } from "@/services/movies";
 import type { MovieDetails } from "@/types/movies";
@@ -50,19 +49,6 @@ export default function MovieDetails() {
     .map((actor) => actor.name)
     .join(", ");
 
-  function toggleFavorite() {
-    const stored: MovieDetails[] = JSON.parse(
-      localStorage.getItem("favorites") || "[]",
-    );
-
-    const exists = stored.find((m) => m?.id === data?.id);
-
-    const updated = exists
-      ? stored.filter((m) => m.id !== data?.id)
-      : [...stored, data];
-
-    localStorage.setItem("favorites", JSON.stringify(updated));
-  }
   const trailer = data?.videos.results.find(
     (v) => v.type === "Trailer" && v.site === "YouTube",
   );
@@ -75,8 +61,6 @@ export default function MovieDetails() {
           <ArrowLeft size={24} />
           <p className="text-2xl">Voltar</p>
         </Link>
-
-        <Button onClick={toggleFavorite}>⭐ Favoritar</Button>
       </div>
 
       {/* Grid */}

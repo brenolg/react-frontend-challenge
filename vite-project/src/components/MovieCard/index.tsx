@@ -11,6 +11,7 @@ type Props = Readonly<{
 
 export function MovieCard({ movie }: Props) {
   const { genres } = useMoviesStore();
+  const { toggleFavorite, favoriteMovies } = useMoviesStore();
 
   const imageUrl = movie.poster_path
     ? `https://image.tmdb.org/t/p/w500${movie.poster_path}`
@@ -19,6 +20,7 @@ export function MovieCard({ movie }: Props) {
   const navigate = useNavigate();
 
   const { genreString } = useGenreNames(movie.genre_ids, genres);
+  const isFavorite = favoriteMovies.some((m) => m.id === movie.id);
 
   return (
     <Card
@@ -36,6 +38,16 @@ export function MovieCard({ movie }: Props) {
           alt={movie.title}
           className="w-full h-64 object-cover"
         />
+
+        <button
+          onClick={(e) => {
+            e.stopPropagation();
+            toggleFavorite(movie);
+          }}
+          className="absolute top-2 right-2 bg-black/70 hover:bg-black text-white p-2 rounded-full transition"
+        >
+          {isFavorite ? "❤️" : "🤍"}
+        </button>
 
         {/* Rating  */}
         {!!movie.vote_average && (
