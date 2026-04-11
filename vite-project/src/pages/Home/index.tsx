@@ -11,6 +11,7 @@ import {
 import { useMoviesStore } from "@/store/useMoviesStore";
 import type { Movie } from "@/types/movies";
 import { useQueries, useQuery } from "@tanstack/react-query";
+import { useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
 import {
   createGenreOptions,
@@ -25,6 +26,7 @@ export default function Home() {
   const [year, setYear] = useState<number | null>(null);
   const [minRating, setMinRating] = useState<number | null>(null);
   const debouncedSearch = useDebounce(search, 500);
+  const navigate = useNavigate();
 
   const results = useQueries({
     queries: [
@@ -80,12 +82,19 @@ export default function Home() {
 
   const moviesToShow = getMoviesToShow();
 
+  console.log(moviesToShow);
+
   const genreOptions = createGenreOptions(genres);
   const yearOptions = createYearOptions();
   const ratingOptions = createRatingOptions();
 
   return (
     <div className="space-y-4">
+      <div>
+        <button onClick={() => navigate({ to: "/favorites" })}>
+          Favoritos
+        </button>
+      </div>
       <Input
         type="text"
         placeholder="Buscar filmes..."

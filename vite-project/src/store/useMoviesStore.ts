@@ -51,6 +51,7 @@ export const useMoviesStore = create<MoviesStore>()(
 
       partialize: (state) => ({
         favoriteMovies: state.favoriteMovies,
+        genres: state.genres,
       }),
     },
   ),

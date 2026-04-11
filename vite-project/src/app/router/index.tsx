@@ -4,6 +4,7 @@ import {
   createRouter,
 } from "@tanstack/react-router";
 
+import Favorites from "@/pages/Favorites";
 import MovieDetails from "@/pages/MovieDetails";
 import Home from "../../pages/Home";
 import Login from "../../pages/Login";
@@ -27,7 +28,19 @@ const movieRoute = createRoute({
   path: "/movie/$id",
   component: MovieDetails,
 });
-const routeTree = rootRoute.addChildren([loginRoute, homeRoute, movieRoute]);
+
+const favoritesRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: "/favorites",
+  component: Favorites,
+});
+
+const routeTree = rootRoute.addChildren([
+  loginRoute,
+  homeRoute,
+  movieRoute,
+  favoritesRoute,
+]);
 
 export const router = createRouter({
   routeTree,
