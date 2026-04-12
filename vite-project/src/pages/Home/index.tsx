@@ -1,5 +1,6 @@
 import { FilterSelect } from "@/components/form/FilterSelect";
 import { MovieCard } from "@/components/MovieCard";
+import { ThemeSwitch } from "@/components/ThemeSwitch";
 import { Input } from "@/components/ui/input";
 import { useDebounce } from "@/hooks/useDebounce";
 import {
@@ -95,6 +96,7 @@ export default function Home() {
           Favoritos
         </button>
       </div>
+      <ThemeSwitch />
       <Input
         type="text"
         placeholder="Buscar filmes..."

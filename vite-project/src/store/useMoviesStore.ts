@@ -2,6 +2,8 @@ import type { Genre, Movie } from "@/types/movies";
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
 
+type Theme = "dark" | "light";
+
 type MoviesStore = {
   genres: Genre[];
   popularMovies: Movie[];
@@ -13,6 +15,10 @@ type MoviesStore = {
   addFavorite: (movie: Movie) => void;
   removeFavorite: (movieId: number) => void;
   toggleFavorite: (movie: Movie) => void;
+
+  theme: Theme;
+  toggleTheme: () => void;
+  setTheme: (theme: Theme) => void;
 };
 
 export const useMoviesStore = create<MoviesStore>()(
@@ -45,6 +51,15 @@ export const useMoviesStore = create<MoviesStore>()(
             : [...state.favoriteMovies, movie],
         }));
       },
+
+      theme: "dark",
+
+      setTheme: (theme) => set({ theme }),
+
+      toggleTheme: () => {
+        const current = get().theme;
+        set({ theme: current === "dark" ? "light" : "dark" });
+      },
     }),
     {
       name: "movies-storage",
@@ -52,6 +67,7 @@ export const useMoviesStore = create<MoviesStore>()(
       partialize: (state) => ({
         favoriteMovies: state.favoriteMovies,
         genres: state.genres,
+        theme: state.theme,
       }),
     },
   ),
