@@ -44,7 +44,7 @@ export default function Home() {
   const { data: searchData, isFetching: isSearching } = useQuery({
     queryKey: ["search", debouncedSearch],
     queryFn: () => searchMovies(debouncedSearch),
-    enabled: !!debouncedSearch,
+    enabled: debouncedSearch.trim().length > 0,
   });
 
   const { data: discoverData, isFetching: isFiltering } = useQuery({

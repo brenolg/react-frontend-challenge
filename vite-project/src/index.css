@@ -51,11 +51,7 @@ body,
     height: 6px;
   }
 
-  ::-webkit-scrollbar-track {
-    background: transparent;
-  }
-
-  :hover::-webkit-scrollbar-thumb {
+  ::-webkit-scrollbar-thumb {
     background-color: rgba(255, 255, 255, 0.3);
     border-radius: 10px;
   }
