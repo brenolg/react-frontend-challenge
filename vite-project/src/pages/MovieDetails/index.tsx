@@ -1,4 +1,5 @@
 import { Divider } from "@/components/Divider";
+import { Spinner } from "@/components/Spinner";
 import { Tag } from "@/components/Tag";
 import { useGenreNames } from "@/hooks/useGenreNames";
 import { getMovieDetails } from "@/services/movies";
@@ -15,11 +16,15 @@ export default function MovieDetails() {
     queryFn: () => getMovieDetails(id),
   });
 
-  console.log(data);
   const genreIds: number[] = data?.genres?.map((g) => g.id) || [];
   const { genreArray } = useGenreNames(genreIds, data?.genres || []);
 
-  if (isLoading) return <p>Carregando...</p>;
+  if (isLoading)
+    return (
+      <div className="flex justify-center py-20">
+        <Spinner size="lg" />
+      </div>
+    );
 
   const crew = data?.credits?.crew || [];
 

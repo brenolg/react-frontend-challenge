@@ -1,6 +1,7 @@
 import { FilterSelect } from "@/components/form/FilterSelect";
 import { Header } from "@/components/Header";
 import { MovieCard } from "@/components/MovieCard";
+import { Spinner } from "@/components/Spinner";
 import { Input } from "@/components/ui/input";
 import { useDebounce } from "@/hooks/useDebounce";
 import {
@@ -125,7 +126,11 @@ export default function Home() {
           />
         </div>
 
-        {isGlobalLoading && <p>Filtrando...</p>}
+        {isGlobalLoading && (
+          <div className="flex justify-center py-10">
+            <Spinner size="lg" />
+          </div>
+        )}
 
         {!isGlobalLoading && (
           <div className="flex flex-wrap gap-4 justify-center">
