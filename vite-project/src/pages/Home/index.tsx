@@ -1,6 +1,6 @@
 import { FilterSelect } from "@/components/form/FilterSelect";
+import { Header } from "@/components/Header";
 import { MovieCard } from "@/components/MovieCard";
-import { ThemeSwitch } from "@/components/ThemeSwitch";
 import { Input } from "@/components/ui/input";
 import { useDebounce } from "@/hooks/useDebounce";
 import {
@@ -12,7 +12,6 @@ import {
 import { useMoviesStore } from "@/store/useMoviesStore";
 import type { Movie } from "@/types/movies";
 import { useQueries, useQuery } from "@tanstack/react-query";
-import { useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
 import {
   createGenreOptions,
@@ -27,7 +26,6 @@ export default function Home() {
   const [year, setYear] = useState<number | null>(null);
   const [minRating, setMinRating] = useState<number | null>(null);
   const debouncedSearch = useDebounce(search, 500);
-  const navigate = useNavigate();
 
   const results = useQueries({
     queries: [
@@ -90,54 +88,51 @@ export default function Home() {
   const ratingOptions = createRatingOptions();
 
   return (
-    <div className="space-y-4">
-      <div>
-        <button onClick={() => navigate({ to: "/favorites" })}>
-          Favoritos
-        </button>
+    <>
+      <Header />
+      <div className="px-24 pb-12">
+        <Input
+          type="text"
+          placeholder="Buscar filmes..."
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+          className="w-full p-2 border rounded-md"
+        />
+        <FilterSelect
+          value={minRating}
+          onChange={setMinRating}
+          options={ratingOptions}
+          placeholder="Nota mínima"
+          className="w-[140px]"
+        />
+        <FilterSelect
+          value={year}
+          onChange={setYear}
+          options={yearOptions}
+          placeholder="Ano"
+          className="w-[120px]"
+        />
+
+        <FilterSelect
+          value={selectedGenre}
+          onChange={setSelectedGenre}
+          options={genreOptions}
+          placeholder="Selecione um gênero"
+          className="w-[200px]"
+        />
+
+        {isGlobalLoading && <p>Filtrando...</p>}
+
+        {!isGlobalLoading && (
+          <div className="flex flex-wrap gap-4">
+            {moviesToShow.map((movie: Movie) => (
+              <div className="w-48" key={movie.id}>
+                <MovieCard movie={movie} />
+              </div>
+            ))}
+          </div>
+        )}
       </div>
-      <ThemeSwitch />
-      <Input
-        type="text"
-        placeholder="Buscar filmes..."
-        value={search}
-        onChange={(e) => setSearch(e.target.value)}
-        className="w-full p-2 border rounded-md"
-      />
-      <FilterSelect
-        value={minRating}
-        onChange={setMinRating}
-        options={ratingOptions}
-        placeholder="Nota mínima"
-        className="w-[140px]"
-      />
-      <FilterSelect
-        value={year}
-        onChange={setYear}
-        options={yearOptions}
-        placeholder="Ano"
-        className="w-[120px]"
-      />
-
-      <FilterSelect
-        value={selectedGenre}
-        onChange={setSelectedGenre}
-        options={genreOptions}
-        placeholder="Selecione um gênero"
-        className="w-[200px]"
-      />
-
-      {isGlobalLoading && <p>Filtrando...</p>}
-
-      {!isGlobalLoading && (
-        <div className="flex flex-wrap gap-4">
-          {moviesToShow.map((movie: Movie) => (
-            <div className="w-48" key={movie.id}>
-              <MovieCard movie={movie} />
-            </div>
-          ))}
-        </div>
-      )}
-    </div>
+    </>
   );
 }
