@@ -128,7 +128,7 @@ export default function Home() {
         {isGlobalLoading && <p>Filtrando...</p>}
 
         {!isGlobalLoading && (
-          <div className="flex flex-wrap gap-4">
+          <div className="flex flex-wrap gap-4 justify-center">
             {moviesToShow.map((movie: Movie) => (
               <div className="w-48" key={movie.id}>
                 <MovieCard movie={movie} />
