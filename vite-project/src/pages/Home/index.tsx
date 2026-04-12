@@ -13,6 +13,7 @@ import {
 import { useMoviesStore } from "@/store/useMoviesStore";
 import type { Movie } from "@/types/movies";
 import { useQueries, useQuery } from "@tanstack/react-query";
+import { ArrowLeft, ArrowRight } from "lucide-react";
 import { useState } from "react";
 import {
   createGenreOptions,
@@ -27,6 +28,7 @@ export default function Home() {
   const [year, setYear] = useState<number | null>(null);
   const [minRating, setMinRating] = useState<number | null>(null);
   const debouncedSearch = useDebounce(search, 500);
+  const [page, setPage] = useState(1);
 
   const results = useQueries({
     queries: [
@@ -35,27 +37,35 @@ export default function Home() {
         queryFn: getGenres,
       },
       {
-        queryKey: ["movies"],
-        queryFn: getPopularMovies,
+        queryKey: ["movies", page],
+        queryFn: () => getPopularMovies(page),
+        placeholderData: (prev: { results: Movie[] } | undefined) => prev,
       },
     ],
   });
 
   const { data: searchData, isFetching: isSearching } = useQuery({
-    queryKey: ["search", debouncedSearch],
-    queryFn: () => searchMovies(debouncedSearch),
+    queryKey: ["search", debouncedSearch, page],
+    queryFn: () =>
+      searchMovies({
+        query: debouncedSearch,
+        page,
+      }),
     enabled: debouncedSearch.trim().length > 0,
+    placeholderData: (prev) => prev,
   });
 
   const { data: discoverData, isFetching: isFiltering } = useQuery({
-    queryKey: ["discover", selectedGenre, year, minRating],
+    queryKey: ["discover", selectedGenre, year, minRating, page],
     queryFn: () =>
       discoverMovies({
         genreId: selectedGenre ?? null,
         year: year ?? null,
         minRating: minRating ?? null,
+        page,
       }),
     enabled: selectedGenre != null || year != null || minRating != null,
+    placeholderData: (prev) => prev,
   });
 
   const initialLoading = results.some((q) => q.isPending);
@@ -98,12 +108,18 @@ export default function Home() {
             type="text"
             placeholder="Buscar filmes..."
             value={search}
-            onChange={(e) => setSearch(e.target.value)}
+            onChange={(e) => {
+              setPage(1);
+              setSearch(e.target.value);
+            }}
             className="w-[260px] p-2 border rounded-md"
           />
           <FilterSelect
             value={minRating}
-            onChange={setMinRating}
+            onChange={(value) => {
+              setMinRating(value);
+              setPage(1);
+            }}
             options={ratingOptions}
             placeholder="Nota mínima"
             className="w-[160px]"
@@ -111,7 +127,10 @@ export default function Home() {
 
           <FilterSelect
             value={year}
-            onChange={setYear}
+            onChange={(value) => {
+              setYear(value);
+              setPage(1);
+            }}
             options={yearOptions}
             placeholder="Ano"
             className="w-[140px]"
@@ -119,7 +138,10 @@ export default function Home() {
 
           <FilterSelect
             value={selectedGenre}
-            onChange={setSelectedGenre}
+            onChange={(value) => {
+              setSelectedGenre(value);
+              setPage(1);
+            }}
             options={genreOptions}
             placeholder="Gênero"
             className="w-[220px]"
@@ -133,13 +155,34 @@ export default function Home() {
         )}
 
         {!isGlobalLoading && (
-          <div className="flex flex-wrap gap-4 justify-center">
-            {moviesToShow.map((movie: Movie) => (
-              <div className="w-48" key={movie.id}>
-                <MovieCard movie={movie} />
-              </div>
-            ))}
-          </div>
+          <>
+            <div className="flex flex-wrap gap-4 justify-center">
+              {moviesToShow.map((movie: Movie) => (
+                <div className="w-48" key={movie.id}>
+                  <MovieCard movie={movie} />
+                </div>
+              ))}
+            </div>
+            {/* Paginação */}
+            <div className="flex justify-center items-center gap-4 mt-10">
+              <button
+                onClick={() => setPage((p) => Math.max(p - 1, 1))}
+                disabled={page === 1}
+                className="px-4 py-2  disabled:opacity-50 flex justify-center items-center gap-2"
+              >
+                <ArrowLeft size={12} /> Anterior
+              </button>
+
+              <span className="text-sm">Página {page}</span>
+
+              <button
+                onClick={() => setPage((p) => p + 1)}
+                className="px-4 py-2 flex justify-center items-center gap-2"
+              >
+                Próxima <ArrowRight size={12} />
+              </button>
+            </div>
+          </>
         )}
       </div>
     </>
