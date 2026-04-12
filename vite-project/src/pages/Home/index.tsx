@@ -91,35 +91,39 @@ export default function Home() {
     <>
       <Header />
       <div className="px-24 pb-12">
-        <Input
-          type="text"
-          placeholder="Buscar filmes..."
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-          className="w-full p-2 border rounded-md"
-        />
-        <FilterSelect
-          value={minRating}
-          onChange={setMinRating}
-          options={ratingOptions}
-          placeholder="Nota mínima"
-          className="w-[140px]"
-        />
-        <FilterSelect
-          value={year}
-          onChange={setYear}
-          options={yearOptions}
-          placeholder="Ano"
-          className="w-[120px]"
-        />
+        {/* Filtros */}
+        <div className="pb-8 pt-10 flex flex-wrap justify-center items-center gap-4">
+          <Input
+            type="text"
+            placeholder="Buscar filmes..."
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            className="w-[260px] p-2 border rounded-md"
+          />
+          <FilterSelect
+            value={minRating}
+            onChange={setMinRating}
+            options={ratingOptions}
+            placeholder="Nota mínima"
+            className="w-[160px]"
+          />
 
-        <FilterSelect
-          value={selectedGenre}
-          onChange={setSelectedGenre}
-          options={genreOptions}
-          placeholder="Selecione um gênero"
-          className="w-[200px]"
-        />
+          <FilterSelect
+            value={year}
+            onChange={setYear}
+            options={yearOptions}
+            placeholder="Ano"
+            className="w-[140px]"
+          />
+
+          <FilterSelect
+            value={selectedGenre}
+            onChange={setSelectedGenre}
+            options={genreOptions}
+            placeholder="Gênero"
+            className="w-[220px]"
+          />
+        </div>
 
         {isGlobalLoading && <p>Filtrando...</p>}
 
