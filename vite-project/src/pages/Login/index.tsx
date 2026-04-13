@@ -1,6 +1,7 @@
 import { FormInput } from "@/components/form/FormInput";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { fakeLogin } from "@/services/auth";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useNavigate } from "@tanstack/react-router";
 import { Eye, EyeOff } from "lucide-react";
@@ -28,9 +29,15 @@ export default function Login() {
 
   const onSubmit = async (data: LoginFormData) => {
     await new Promise((res) => setTimeout(res, 800));
-    localStorage.setItem("token", "fake-jwt-token");
+
+    const success = fakeLogin(data.email, data.password);
+
+    if (!success) {
+      alert("Credenciais inválidas");
+      return;
+    }
+
     navigate({ to: "/home" });
-    console.log(data);
   };
 
   return (
@@ -38,7 +45,7 @@ export default function Login() {
       <Card className="w-full max-w-md shadow-xl rounded-2xl">
         <CardHeader>
           <CardTitle className="text-2xl font-bold text-center">
-            Loginff
+            Login
           </CardTitle>
         </CardHeader>
 

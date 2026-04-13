@@ -108,6 +108,7 @@ export default function Home() {
             type="text"
             placeholder="Buscar filmes..."
             value={search}
+            variant="ghost"
             onChange={(e) => {
               setPage(1);
               setSearch(e.target.value);
