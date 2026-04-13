@@ -1,5 +1,5 @@
 import Login from "@/pages/Login";
-import { render, screen } from "@testing-library/react";
+import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
@@ -49,7 +49,7 @@ describe("Login Page", () => {
 
     await userEvent.click(button);
 
-    await vi.waitFor(() => {
+    await waitFor(() => {
       expect(localStorage.getItem("token")).toBe("fake-jwt-token");
     });
 
@@ -63,7 +63,10 @@ describe("Login Page", () => {
 
     await userEvent.click(button);
 
-    expect(localStorage.getItem("token")).toBeNull();
+    await waitFor(() => {
+      expect(localStorage.getItem("token")).toBeNull();
+    });
+
     expect(mockNavigate).not.toHaveBeenCalled();
   });
 
@@ -74,12 +77,28 @@ describe("Login Page", () => {
     const passwordInput = screen.getByPlaceholderText("Senha");
     const button = screen.getByRole("button", { name: /entrar/i });
 
-    // email inválido
     await userEvent.type(emailInput, "email-invalido");
     await userEvent.type(passwordInput, "123456");
 
     await userEvent.click(button);
 
     expect(await screen.findByText("Email inválido")).toBeInTheDocument();
+  });
+
+  it("deve mostrar erro quando senha é curta", async () => {
+    render(<Login />);
+
+    const emailInput = screen.getByPlaceholderText("Email");
+    const passwordInput = screen.getByPlaceholderText("Senha");
+    const button = screen.getByRole("button", { name: /entrar/i });
+
+    await userEvent.type(emailInput, "admin@email.com");
+    await userEvent.type(passwordInput, "123");
+
+    await userEvent.click(button);
+
+    expect(
+      await screen.findByText("Pelo menos 6 caracteres"),
+    ).toBeInTheDocument();
   });
 });

@@ -92,8 +92,6 @@ export default function Home() {
 
   const moviesToShow = getMoviesToShow();
 
-  console.log(moviesToShow);
-
   const genreOptions = createGenreOptions(genres);
   const yearOptions = createYearOptions();
   const ratingOptions = createRatingOptions();
