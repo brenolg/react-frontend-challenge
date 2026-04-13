@@ -224,4 +224,3 @@ Mesmo sendo um projeto sem backend, foi possível simular:
 - Persistência de favoritos em API
 - Melhor tratamento de erros
 - Mostrar o ultimo parâmetro pesquisado e não ter prioridade em qual dado é mostrado
-- Cache mais avançado (React Query)
